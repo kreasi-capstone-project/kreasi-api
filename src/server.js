@@ -3,23 +3,22 @@ const dotenv = require('dotenv')
 const logger = require('./logger');
 const routes = require('./routes');
 const Boom = require('@hapi/boom');
+const { validateToken } = require('./auth/handler');
 
 dotenv.config()
 
-const validate = async (token) => {
-	if (token === "invalid") {
-		return { isValid: false, credentials: null }
-	}
-	return { isValid: true, credentials: { id: 1, username: 'username testing' } }
-}
 
+/**
+ * custom authentication schema
+ * it's following bearer authentication mechanism
+*/
 const bearerAuthSchema = async (request, h) => {
 	const authorization = request.headers.authorization
 	if (!authorization || !authorization.startsWith('Bearer ')) {
 		throw Boom.unauthorized("Your'e not authenticated, please login or register first")
 	}
 	const token = authorization.split(" ")
-	const { isValid, credentials } = await validate(token[1])
+	const { isValid, credentials } = await validateToken(token[1])
 	if (!isValid) {
 		throw Boom.unauthorized("Your'e not authenticated, please login or register first")
 	}
@@ -36,6 +35,8 @@ const init = async () => {
 			}
 		}
 	});
+
+	// Boom error handling to customize error response based on API Design
 	server.ext("onPreResponse", (request, h) => {
 		const response = request.response
 		if (response.isBoom || response instanceof Error) {
