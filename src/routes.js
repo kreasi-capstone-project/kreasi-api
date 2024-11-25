@@ -2,6 +2,7 @@
 
 const dotenv = require('dotenv')
 const { signUp } = require('./auth/handler')
+const Boom = require('@hapi/boom')
 
 dotenv.config()
 
@@ -25,7 +26,7 @@ const routes = [
 		method: 'GET',
 		path: '/home',
 		handler: (/** @type Request */ request, /** @type Response */ h) => {
-			return h.response({ user: request.auth.credentials.username }).code(200)
+			return h.response({ user: request.auth.credentials.user }).code(200)
 		}
 	}
 ]
