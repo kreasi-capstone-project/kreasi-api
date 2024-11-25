@@ -17,10 +17,22 @@ const BCRYPT_SALT_ROUND = 10
  * @param {string} token
  */
 exports.validateToken = async (token) => {
-	if (token === "invalid") {
-		return { isValid: false, credentials: null }
+	const [rows] = await db.query(
+		'SELECT id, email, fullname, token FROM users WHERE token = ?',
+		[token]
+	)
+	if (rows.length === 0) {
+		throw Boom.unauthorized("You're not authenticated, please login or register account first")
 	}
-	return { isValid: true, credentials: { id: 1, username: 'username testing' } }
+	return {
+		isValid: true, credentials: {
+			user: {
+				id: rows[0].id,
+				email: rows[0].email,
+				fullname: rows[0].fullname
+			}
+		}
+	}
 }
 
 exports.signUp = async (/** @type Request */ request, /** @type Response*/ h) => {
@@ -29,8 +41,9 @@ exports.signUp = async (/** @type Request */ request, /** @type Response*/ h) =>
 		const hashedPassword = await bcrypt.hash(password, BCRYPT_SALT_ROUND)
 		const userId = uuid()
 
-		const results = await db.execute(
-			'INSERT INTO users (id, email, password, fullname, token) VALUES (?, ?, ?, ?, ?)', [userId, email, hashedPassword, fullname, userId]
+		await db.execute(
+			'INSERT INTO users (id, email, password, fullname, token) VALUES (?, ?, ?, ?, ?)',
+			[userId, email, hashedPassword, fullname, userId]
 		)
 		return h.response({
 			status: "success",
@@ -44,7 +57,7 @@ exports.signUp = async (/** @type Request */ request, /** @type Response*/ h) =>
 			}
 		}).code(201)
 	} catch (error) {
-		logger("error", error.message || error, "createUser")
+		logger("error", error.message || error, "createUser", { requestId: request.info.id, userId: null })
 		if (error.code === "ER_DUP_ENTRY") {
 			throw Boom.conflict("This email is already exist, try to login instead")
 		}
