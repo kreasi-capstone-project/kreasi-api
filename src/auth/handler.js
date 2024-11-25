@@ -64,3 +64,42 @@ exports.signUp = async (/** @type Request */ request, /** @type Response*/ h) =>
 		throw Boom.badRequest("An unexpected error happened")
 	}
 }
+
+exports.signin = async (/** @type {Request}*/request, /** @type {Response}*/h) => {
+	const { email, password } = request.payload
+	const [rows] = await db.query(
+		'SELECT id, fullname, email, password FROM users WHERE email = ?',
+		[email]
+	)
+	if (rows.length === 0) {
+		throw Boom.badRequest("email or password is incorrect")
+	}
+
+	const isPasswordValid = bcrypt.compareSync(password, rows[0].password)
+	if (!isPasswordValid) {
+		throw Boom.badRequest("email or password is incorrect")
+	}
+
+	h.authenticated({
+		credentials: {
+			user: {
+				id: rows[0].id,
+				email: rows[0].email,
+				fullname: rows[0].fullname
+			}
+		}
+	})
+
+	return h.response({
+		status: 'success',
+		data: {
+			user: {
+				id: rows[0].id,
+				fullname: rows[0].fullname,
+				email: rows[0].email,
+				token: rows[0].id
+			}
+		}
+	}).code(200)
+}
+

@@ -1,7 +1,7 @@
 // @ts-check
 
 const dotenv = require('dotenv')
-const { signUp } = require('./auth/handler')
+const { signUp, signin } = require('./auth/handler')
 const Boom = require('@hapi/boom')
 
 dotenv.config()
@@ -21,6 +21,14 @@ const routes = [
 		},
 		handler: signUp
 
+	},
+	{
+		method: 'POST',
+		path: '/api/signin',
+		options: {
+			auth: false
+		},
+		handler: signin
 	},
 	{
 		method: 'GET',
