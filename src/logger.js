@@ -16,7 +16,10 @@ const pinoConfig = pino.pino({
 /**
  * @typedef {Object} LoggerContext
  * @property {string} requestId - additional context
- * @property {string} userId - additional context, so we can know who did what in our system
+ * @property {string | null} userId - additional context, so we can know who did what in our system
+ * @property {string | null} path
+ * @property {string | null} method
+ *
  * @param {'info' | 'error' | 'warn'} level - log level
  * @param {string} message - log message
  * @param {string} operationId - name of function. e.g createUserHandler, udpateUserHandler 
@@ -31,8 +34,11 @@ function logger(level, message, operationId, context) {
 		pinoConfig[level]({
 			message, context: {
 				requestId: context.requestId,
+				method: context.method,
+				path: context.path,
 				userId: context.userId,
-				operationId: operationId
+				operationId: operationId,
+				stack: context.stack
 			}
 		})
 	}

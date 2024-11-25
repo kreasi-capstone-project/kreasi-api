@@ -39,22 +39,29 @@ const init = async () => {
 	// Boom error handling to customize error response based on API Design
 	server.ext("onPreResponse", (request, h) => {
 		const response = request.response
-		if (response.isBoom || response instanceof Error) {
-			logger("error", response.error, "preResponse hook")
-			const statusCode = response.isBoom ? response.output.payload.statusCode : 500;
-			const message = response.isBoom
-				? response.output.payload.message
-				: response.message || "An unexpected error occurred";
-
-			return h.response({
-				status: 'fail',
-				errors: {
-					code: statusCode,
-					message: message
-				}
-			}).code(statusCode)
+		if (!response.isBoom || !(response instanceof Error)) {
+			return h.continue
 		}
-		return h.continue
+		const statusCode = response.isBoom ? response.output.payload.statusCode : 500;
+		const message = response.isBoom
+			? response.output.payload.message
+			: response.message || "An unexpected error occurred";
+
+		logger("error", message, "preResponse hook",
+			{
+				requestId: request.info.id,
+				method: request.method.toUpperCase(),
+				path: request.path,
+				stack: response.stack
+			}
+		)
+		return h.response({
+			status: 'fail',
+			errors: {
+				code: statusCode,
+				message: message
+			}
+		}).code(statusCode).takeover()
 	})
 
 	server.auth.scheme('bearer', (server, options) => {
