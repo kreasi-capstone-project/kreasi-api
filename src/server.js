@@ -41,7 +41,7 @@ const init = async () => {
 		const response = request.response
 		if (response.isBoom || response instanceof Error) {
 			logger("error", response.error, "preResponse hook")
-			const statusCode = response.isBoom ? response.output.payload.statusCode : 400;
+			const statusCode = response.isBoom ? response.output.payload.statusCode : 500;
 			const message = response.isBoom
 				? response.output.payload.message
 				: response.message || "An unexpected error occurred";
@@ -52,7 +52,7 @@ const init = async () => {
 					code: statusCode,
 					message: message
 				}
-			}).code(response.output.payload.statusCode || 500)
+			}).code(statusCode)
 		}
 		return h.continue
 	})
