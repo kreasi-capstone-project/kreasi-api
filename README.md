@@ -14,7 +14,7 @@ KREASI is an organization dedicated to empowering individuals through innovative
 |Greestaviola Allodya Darmawan|M180B4KX1644|Machine Learning|
 |Nanda Anindya Kusumawati|M180B4KX3239|Machine Learning|
 |Savira Hayyun Audina|M180B4KX4089|Machine Learning|
-|Luthi Ikmal Fatir|C550B4NY2306|Cloud Computing|
+|Luthfi Ikmal Fatir|C550B4NY2306|Cloud Computing|
 |Zulfikar Rosadi|C767B4NY4635|Cloud Computing|
 |Akmal Oktavian|A767B4NY0304|Mobile Development|
 |Riski Batubara|A811B4KY3879|Mobile Development|
