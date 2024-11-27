@@ -21,6 +21,7 @@ exports.validateToken = async (token) => {
 		'SELECT id, email, fullname, token FROM users WHERE token = ?',
 		[token]
 	)
+	// @ts-ignore
 	if (rows.length === 0) {
 		throw Boom.unauthorized("You're not authenticated, please login or register account first")
 	}
@@ -37,9 +38,13 @@ exports.validateToken = async (token) => {
 
 exports.signUp = async (/** @type Request */ request, /** @type Response*/ h) => {
 	try {
+		// @ts-ignore
 		const { email, password, fullname } = request.payload
 		const hashedPassword = await bcrypt.hash(password, BCRYPT_SALT_ROUND)
 		const userId = uuid()
+		console.log(email)
+		console.log(password)
+		console.log(fullname)
 
 		await db.execute(
 			'INSERT INTO users (id, email, password, fullname, token) VALUES (?, ?, ?, ?, ?)',
@@ -57,6 +62,8 @@ exports.signUp = async (/** @type Request */ request, /** @type Response*/ h) =>
 			}
 		}).code(201)
 	} catch (error) {
+		console.log(error)
+		// @ts-ignore
 		logger("error", error.message || error, "createUser", { requestId: request.info.id, userId: null })
 		if (error.code === "ER_DUP_ENTRY") {
 			throw Boom.conflict("This email is already exist, try to login instead")
@@ -66,11 +73,13 @@ exports.signUp = async (/** @type Request */ request, /** @type Response*/ h) =>
 }
 
 exports.signin = async (/** @type {Request}*/request, /** @type {Response}*/h) => {
+	// @ts-ignore
 	const { email, password } = request.payload
 	const [rows] = await db.query(
 		'SELECT id, fullname, email, password FROM users WHERE email = ?',
 		[email]
 	)
+	// @ts-ignore
 	if (rows.length === 0) {
 		throw Boom.badRequest("email or password is incorrect")
 	}
@@ -79,16 +88,6 @@ exports.signin = async (/** @type {Request}*/request, /** @type {Response}*/h) =
 	if (!isPasswordValid) {
 		throw Boom.badRequest("email or password is incorrect")
 	}
-
-	h.authenticated({
-		credentials: {
-			user: {
-				id: rows[0].id,
-				email: rows[0].email,
-				fullname: rows[0].fullname
-			}
-		}
-	})
 
 	return h.response({
 		status: 'success',
