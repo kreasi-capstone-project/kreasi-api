@@ -39,6 +39,7 @@ const init = async () => {
 	// Boom error handling to customize error response based on API Design
 	server.ext("onPreResponse", (request, h) => {
 		const response = request.response
+		console.log(response)
 		if (!response.isBoom || !(response instanceof Error)) {
 			return h.continue
 		}

@@ -21,6 +21,7 @@ exports.validateToken = async (token, requestId) => {
 		'SELECT id, email, fullname, token FROM users WHERE token = ?',
 		[token]
 	)
+	// @ts-ignore
 	if (rows.length === 0) {
 		logger("error", 'unauthenticated request, token not found', "validateToken", { requestId: requestId, userId: null, path: '/api/regiser', method: 'POST' })
 		throw Boom.unauthorized("You're not authenticated, please login or register account first")
@@ -38,9 +39,13 @@ exports.validateToken = async (token, requestId) => {
 
 exports.register = async (/** @type Request */ request, /** @type Response*/ h) => {
 	try {
+		// @ts-ignore
 		const { email, password, fullname } = request.payload
 		const hashedPassword = await bcrypt.hash(password, BCRYPT_SALT_ROUND)
 		const userId = uuid()
+		console.log(email)
+		console.log(password)
+		console.log(fullname)
 
 		await db.execute(
 			'INSERT INTO users (id, email, password, fullname, token) VALUES (?, ?, ?, ?, ?)',
@@ -59,6 +64,7 @@ exports.register = async (/** @type Request */ request, /** @type Response*/ h) 
 		}).code(201)
 	} catch (error) {
 		logger("error", error.message || error, "createUser", { requestId: request.info.id, userId: null, path: '/api/regiser', method: 'POST' })
+
 		if (error.code === "ER_DUP_ENTRY") {
 			throw Boom.conflict("This account already exist, maybe you should login instead")
 		}
@@ -67,11 +73,13 @@ exports.register = async (/** @type Request */ request, /** @type Response*/ h) 
 }
 
 exports.signin = async (/** @type {Request}*/request, /** @type {Response}*/h) => {
+	// @ts-ignore
 	const { email, password } = request.payload
 	const [rows] = await db.query(
 		'SELECT id, fullname, email, password FROM users WHERE email = ?',
 		[email]
 	)
+	// @ts-ignore
 	if (rows.length === 0) {
 		logger('error', 'login failed, email not found', 'signin', { userId: null, method: 'POST', path: '/api/signin', requestId: request.info.id })
 		throw Boom.badRequest("login fail, email or password is incorrect")
@@ -82,16 +90,6 @@ exports.signin = async (/** @type {Request}*/request, /** @type {Response}*/h) =
 		logger('error', 'login failed, password incorrect', 'signin', { userId: null, method: 'POST', path: '/api/signin', requestId: request.info.id })
 		throw Boom.badRequest("login fail, email or password is incorrect")
 	}
-
-	h.authenticated({
-		credentials: {
-			user: {
-				id: rows[0].id,
-				email: rows[0].email,
-				name: rows[0].fullname
-			}
-		}
-	})
 
 	return h.response({
 		status: 'success',
