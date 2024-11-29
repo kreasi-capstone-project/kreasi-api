@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "pnpm nodemon src/server.js"
+    "dev": "pnpm nodemon src/server.js",
+    "start": "NODE_ENV=production && node src/server.js"
   },
   "keywords": [],
   "author": "",
