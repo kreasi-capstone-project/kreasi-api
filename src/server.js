@@ -18,7 +18,7 @@ const bearerAuthSchema = async (request, h) => {
 		throw Boom.unauthorized("Your'e not authenticated, please login or register first")
 	}
 	const token = authorization.split(" ")
-	const { isValid, credentials } = await validateToken(token[1])
+	const { isValid, credentials } = await validateToken(token[1], request.info.id)
 	if (!isValid) {
 		throw Boom.unauthorized("Your'e not authenticated, please login or register first")
 	}
