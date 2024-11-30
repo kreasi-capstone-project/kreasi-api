@@ -2,10 +2,10 @@
   "name": "kreasi-api",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
-  "scripts": {
-    "dev": "pnpm nodemon src/server.js",
-    "start": "NODE_ENV=production && node src/server.js"
+  "main": "src/server.js",
+ "scripts": {
+    "dev": "npx nodemon src/server.js",
+    "start": "NODE_ENV=production node src/server.js"
   },
   "keywords": [],
   "author": "",
