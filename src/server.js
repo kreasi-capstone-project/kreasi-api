@@ -27,8 +27,8 @@ const bearerAuthSchema = async (request, h) => {
 
 const init = async () => {
 	const server = Hapi.server({
-		port: process.env.SERVER_PORT || 3000,
-		host: process.env.SERVER_HOST || 'localhost',
+		port: process.env.PORT || 8080,
+		host: process.env.NODE_ENV === 'development' ? 'localhost' : '0.0.0.0',
 		routes: {
 			cors: {
 				origin: ['*']
@@ -77,5 +77,10 @@ const init = async () => {
 	await server.start()
 	logger("info", `server is running at ${server.info.uri}`)
 }
+
+process.on('unhandledRejection', (err) => {
+	console.error(err)
+	process.exit(1)
+})
 
 init()
