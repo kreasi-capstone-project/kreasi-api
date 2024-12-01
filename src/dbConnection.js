@@ -9,10 +9,10 @@ const connection = mysql.createPool({
     password: process.env.DB_PASSWORD || '',
     database: process.env.DB_NAME || 'kreasi',
     waitForConnections: true,
-    connectionLimit: 10,       // Huruf "L" besar pada connectionLimit
-    queueLimit: 0,             // Huruf "L" besar pada queueLimit
-    enableKeepAlive: true,     // CamelCase pada enableKeepAlive
-    keepAliveInitialDelay: 0   // Tetap valid
+    connectionLimit: 10,       
+    queueLimit: 0,             
+    enableKeepAlive: true,     
+    keepAliveInitialDelay: 0   
 });
 
 module.exports = connection;
