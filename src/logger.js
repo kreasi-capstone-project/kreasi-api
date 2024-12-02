@@ -19,6 +19,7 @@ const pinoConfig = pino.pino({
  * @property {string | null} userId - additional context, so we can know who did what in our system
  * @property {string | null} path
  * @property {string | null} method
+ * @property {string | null} stack
  *
  * @param {'info' | 'error' | 'warn'} level - log level
  * @param {string} message - log message
