@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "src/server.js",
- "scripts": {
+  "scripts": {
     "dev": "npx nodemon src/server.js",
     "start": "NODE_ENV=production node src/server.js"
   },
@@ -16,6 +16,7 @@
     "@hapi/hapi": "^21.3.12",
     "bcrypt": "^5.1.1",
     "dotenv": "^16.4.5",
+    "joi": "^17.13.3",
     "mysql2": "^3.11.4",
     "pino": "^9.5.0",
     "uuid": "^11.0.3"
