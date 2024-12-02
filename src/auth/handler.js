@@ -23,7 +23,7 @@ exports.validateToken = async (token, requestId) => {
 	)
 	// @ts-ignore
 	if (rows.length === 0) {
-		logger("error", 'unauthenticated request, token not found', "validateToken", { requestId: requestId, userId: null, path: '/api/regiser', method: 'POST' })
+		logger("error", 'unauthenticated request, token not found', "validateToken", { stack: null, requestId: requestId, userId: null, path: '/api/regiser', method: 'POST' })
 		throw Boom.unauthorized("You're not authenticated, please login or register account first")
 	}
 	return {
@@ -40,30 +40,27 @@ exports.validateToken = async (token, requestId) => {
 exports.register = async (/** @type Request */ request, /** @type Response*/ h) => {
 	try {
 		// @ts-ignore
-		const { email, password, fullname } = request.payload
+		const { email, password, name } = request.payload
 		const hashedPassword = await bcrypt.hash(password, BCRYPT_SALT_ROUND)
 		const userId = uuid()
-		console.log(email)
-		console.log(password)
-		console.log(fullname)
 
 		await db.execute(
 			'INSERT INTO users (id, email, password, fullname, token) VALUES (?, ?, ?, ?, ?)',
-			[userId, email, hashedPassword, fullname, userId]
+			[userId, email, hashedPassword, name, userId]
 		)
 		return h.response({
 			status: "success",
 			data: {
 				users: {
 					id: userId,
-					name: fullname,
+					name: name,
 					email: email,
 				},
 				token: userId
 			}
 		}).code(201)
 	} catch (error) {
-		logger("error", error.message || error, "createUser", { requestId: request.info.id, userId: null, path: '/api/regiser', method: 'POST' })
+		logger("error", error.message || error, "createUser", { requestId: request.info.id, userId: null, path: '/api/regiser', method: 'POST', stack: error.stack })
 
 		if (error.code === "ER_DUP_ENTRY") {
 			throw Boom.conflict("This account already exist, maybe you should login instead")
@@ -81,13 +78,13 @@ exports.signin = async (/** @type {Request}*/request, /** @type {Response}*/h) =
 	)
 	// @ts-ignore
 	if (rows.length === 0) {
-		logger('error', 'login failed, email not found', 'signin', { userId: null, method: 'POST', path: '/api/signin', requestId: request.info.id })
+		logger('error', 'login failed, email not found', 'signin', { stack: null, userId: null, method: 'POST', path: '/api/signin', requestId: request.info.id })
 		throw Boom.badRequest("login fail, email or password is incorrect")
 	}
 
 	const isPasswordValid = bcrypt.compareSync(password, rows[0].password)
 	if (!isPasswordValid) {
-		logger('error', 'login failed, password incorrect', 'signin', { userId: null, method: 'POST', path: '/api/signin', requestId: request.info.id })
+		logger('error', 'login failed, password incorrect', 'signin', { stack: null, userId: null, method: 'POST', path: '/api/signin', requestId: request.info.id })
 		throw Boom.badRequest("login fail, email or password is incorrect")
 	}
 
