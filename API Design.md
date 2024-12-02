@@ -152,7 +152,7 @@
 ### Request
 - Endpoint: `/api/subjects`
 - Header:
-	- `Authorization: Basic [token]`
+	- `Authorization: Bearer [token]`
 ### Response
 #### 200 ( Success )
 - Header:
@@ -196,7 +196,7 @@
 	- id: number
 		- description: learning path ID
 - Header:
-	- `Authorization: Basic [token]`
+	- `Authorization: Bearer [token]`
 ### Response
 #### 200 ( Success - Learning Path Found )
 - Header:
@@ -233,7 +233,7 @@
 	- id: number
 		- description: learning path ID
 - Header:
-	- `Authorization: Basic [token]`
+	- `Authorization: Bearer [token]`
 
 ### Response
 #### 200 ( Success )
@@ -275,7 +275,7 @@
 - Endpoint: `/api/subjects/:id/assessments`
 - Header:
 	- `Content-Type: application/json`
-	- `Authorization: Basic [token]`
+	- `Authorization: Bearer [token]`
 - Body
 ```json
 {
