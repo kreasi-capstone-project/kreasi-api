@@ -2,7 +2,7 @@
 
 const dotenv = require('dotenv')
 const { register, signin } = require('./auth/handler')
-const Boom = require('@hapi/boom')
+const Joi = require('joi')
 
 dotenv.config()
 
@@ -17,7 +17,18 @@ const routes = [
 		method: 'POST',
 		path: '/api/register',
 		options: {
-			auth: false
+			auth: false,
+			validate: {
+				payload: Joi.object({
+					name: Joi.string().required().min(1),
+					email: Joi.string().email().required(),
+					password: Joi.string().required().min(6)
+				}),
+				failAction: async (request, h, error) => {
+					throw error
+				}
+
+			},
 		},
 		handler: register
 
@@ -26,7 +37,16 @@ const routes = [
 		method: 'POST',
 		path: '/api/signin',
 		options: {
-			auth: false
+			auth: false,
+			validate: {
+				payload: Joi.object({
+					email: Joi.string().email().required(),
+					password: Joi.string().required()
+				}),
+				failAction: async (request, h, error) => {
+					throw error
+				}
+			},
 		},
 		handler: signin
 	},
