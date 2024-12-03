@@ -64,13 +64,6 @@ const routes = [
 	},
 	{
 		method: "GET",
-		path: "/home",
-		handler: (/** @type Request */ request, /** @type Response */ h) => {
-			return h.response({ user: request.auth.credentials.user }).code(200);
-		},
-	},
-	{
-		method: "GET",
 		path: "/api/subjects",
 		options: {
 			auth: "bearer",
