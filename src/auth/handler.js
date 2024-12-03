@@ -1,12 +1,12 @@
 // @ts-check
 
-const bcrypt = require('bcrypt')
-const { v7: uuid } = require('uuid')
-const Boom = require('@hapi/boom')
-const logger = require('../logger')
-const db = require('../dbConnection')
+const bcrypt = require("bcrypt");
+const { v7: uuid } = require("uuid");
+const Boom = require("@hapi/boom");
+const logger = require("../logger");
+const db = require("../dbConnection");
 
-const BCRYPT_SALT_ROUND = 10
+const BCRYPT_SALT_ROUND = 10;
 
 /**
  * @typedef {import ('@hapi/hapi').Request} Request
