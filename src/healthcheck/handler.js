@@ -13,8 +13,8 @@ const logger = require("../logger");
  */
 exports.healthcheck = async (request, h) => {
 	try {
-		const [rows] = db.query('SELECT 1')
-		if (rows.length === 0 || rows.length) {
+		const [rows] = await db.query('SELECT 1')
+		if (rows.length) {
 			logger('info', "db helath check pass", "healthcheck", { path: '/api/healthcheck', method: 'GET', requestId: request.info.id, userId: null })
 		}
 		return h.response({
