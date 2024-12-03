@@ -8,7 +8,7 @@ const {
 	getSubjectById,
 	getAssessmentTest,
 } = require("./subjects/handler");
-const Boom = require("@hapi/boom");
+const { healthcheck } = require('./healthcheck/handler');
 
 dotenv.config();
 
@@ -86,6 +86,14 @@ const routes = [
 		},
 		handler: getAssessmentTest,
 	},
+	{
+		method: "GET",
+		path: "/healthcheck",
+		options: {
+			auth: false
+		},
+		handler: healthcheck
+	}
 ];
 
 module.exports = routes;
