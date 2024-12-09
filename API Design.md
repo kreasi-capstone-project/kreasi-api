@@ -147,7 +147,40 @@
 	}
 }
 ```
+## DELETE Logout
+### Request
+- Endpoint: `/api/logout`
 
+### Response
+#### 204 (Success)
+return no content
+#### 400 (Request failed, it's most likely because request is malformed)
+- Header:
+	- `Content-Type: application/json`
+- Body:
+```json
+{
+	"status": "fail",
+	"errors": {
+		"code": 400,
+		"message": "fail to logout, user not exist" 
+	}
+}
+```
+#### 500 (Request failed, server unavailable because it crash)
+- Header:
+	- `Content-Type: application/json`
+- Body:
+```json
+{
+	"status": "fail",
+	"errors": {
+		"code": 500,
+		"message": "This is not your fault, our team is working to fix this issue, please try again later
+" 
+	}
+}
+```
 ## GET All Learning Path
 ### Request
 - Endpoint: `/api/subjects`
@@ -165,10 +198,12 @@
 		"subjects": 
 		[
 			{
+				"id": 1,
 				"name": "Machine Learning",
 				"description": "Lorem Ipsum is simply dummy text of the printing and typesetting industry"
 			},
 			{
+				"id": 2,
 				"name": "Mobile Development with Kotlin",
 				"description": "Lorem Ipsum is simply dummy text of the printing and typesetting industry"
 			}
