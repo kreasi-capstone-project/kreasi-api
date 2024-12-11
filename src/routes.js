@@ -1,6 +1,6 @@
 // @ts-check
 
-const { register, signin } = require('./auth/handler')
+const { register, signin, logout } = require('./auth/handler')
 const Joi = require('joi')
 const dotenv = require("dotenv");
 const {
@@ -37,6 +37,11 @@ const routes = [
 		},
 		handler: register
 
+	},
+	{
+		method: 'DELETE',
+		path: '/api/logout',
+		handler: logout
 	},
 	{
 		method: 'POST',

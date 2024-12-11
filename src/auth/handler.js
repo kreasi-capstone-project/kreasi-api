@@ -87,6 +87,11 @@ exports.signin = async (/** @type {Request}*/request, /** @type {Response}*/h) =
 		logger('error', 'login failed, password incorrect', 'signin', { stack: null, userId: null, method: 'POST', path: '/api/signin', requestId: request.info.id })
 		throw Boom.badRequest("login fail, email or password is incorrect")
 	}
+	const [updatedRows] = await db.execute("UPDATE users SET token = ? WHERE id = ?", [rows[0].id, rows[0].id])
+	if (!updatedRows.affectedRows) {
+		logger('error', 'login failed, fail to update the token', 'signin', { stack: null, userId: null, method: 'POST', path: '/api/signin', requestId: request.info.id })
+		throw Boom.badRequest("login fail, this is not your fault and please try again later")
+	}
 
 	return h.response({
 		status: 'success',
@@ -101,3 +106,21 @@ exports.signin = async (/** @type {Request}*/request, /** @type {Response}*/h) =
 	}).code(200)
 }
 
+
+exports.logout = async (/** @type Request */ request, /** @type Response*/ h) => {
+	const userId = request.auth.credentials.user.id
+	try {
+		const [rows] = await db.execute("UPDATE users SET token = ? WHERE id = ?", [null, userId])
+
+		if (rows.affectedRows === 0) {
+			logger("error", "fail to logout user not exist", 'logout', { path: '/api/logout', method: 'DELETE', requestId: request.info.id, userId: null, stack: null })
+			throw Boom.badRequest("fail to logout, user not exist")
+		}
+
+		return h.response().code(204)
+
+	} catch (error) {
+		logger("error", "fail to logout user not exist", 'logout', { path: '/api/logout', method: 'DELETE', requestId: request.info.id, userId: null, stack: null })
+		throw Boom.serverUnavailable("This is not your fault, our team is working to fix this issue, please try again later")
+	}
+}
