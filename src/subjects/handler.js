@@ -13,7 +13,7 @@ const logger = require("../logger");
  */
 exports.getAllSubjects = async (request, h) => {
   try {
-    const [rows] = await db.query("SELECT name, description FROM subjects");
+    const [rows] = await db.query("SELECT id, name, description FROM subjects");
 
     return h
       .response({
@@ -34,7 +34,7 @@ exports.getSubjectById = async (request, h) => {
 
   try {
     const [rows] = await db.query(
-      "SELECT name, description FROM subjects WHERE id = ?",
+      "SELECT id, name, description FROM subjects WHERE id = ?",
       [id]
     );
 
