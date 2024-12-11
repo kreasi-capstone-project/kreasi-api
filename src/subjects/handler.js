@@ -64,41 +64,37 @@ exports.getSubjectById = async (request, h) => {
   }
 };
 
-exports.getAssessmentTest = async (request, h) => {
+exports.getAssessmentTest = async (/** @type Request  */request, h) => {
   const { id } = request.params;
+  const parsedId = parseInt(id, 10)
+  if (!parsedId) {
+    logger("error", "assessment not found, bad request param", "getAssessmentTest", { path: '/api/subjects/{id}/assessment', method: 'GET', userId: request.auth.credentials.user.id, requestId: request.info.id, stack: null })
+    throw Boom.notFound("Assessment for this subject is not found")
+  }
 
   try {
-    const [subjectRows] = await db.query(
-      "SELECT id, name FROM subjects WHERE id = ?",
-      [id]
+    const [rows] = await db.query(
+      "SELECT id, name, assessments FROM subjects WHERE id = ? ",
+      [parsedId]
     );
-
-    if (subjectRows.length === 0) {
-      return Boom.notFound("Learning path with that specified id is not found");
-    }
-
-    const subject = subjectRows[0];
-
-    const [assessmentRows] = await db.query(
-      "SELECT question, answers, correct_answers FROM assessments WHERE subject_id = ?",
-      [id]
-    );
-
-    const assessments = assessmentRows.reduce((acc, row) => {
-      acc[row.question] = {
-        answers: JSON.parse(row.answers),
-        correct_answers: row.correct_answers,
-      };
-      return acc;
-    }, {});
+    const result = rows.map((row) => ({
+      subjects: {
+        id: row.id,
+        name: row.name
+      },
+      assesments: row.assessments.reduce((acc, item) => {
+        acc[item.question] = {
+          "answers": item.answers,
+          "correct_answers": item.correct_answer
+        };
+        return acc;
+      }, {})
+    }))[0]
 
     return h
       .response({
         status: "success",
-        data: {
-          subjects: subject,
-          assessments,
-        },
+        data: result
       })
       .code(200);
   } catch (error) {
@@ -106,3 +102,4 @@ exports.getAssessmentTest = async (request, h) => {
     throw Boom.badRequest("Failed to retrieve assessment test");
   }
 };
+
