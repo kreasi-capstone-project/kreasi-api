@@ -236,6 +236,20 @@
 	- `Authorization: Bearer [token]`
 
 ### Response
+#### 404 (Assessment not found)
+- Header:
+	- `Content-Type: application/json`
+- Body:
+```json
+{
+	"status": "fail",
+	"errors": {
+		"code": 404,
+		"message": "Assessment for this subject is not found"
+	}
+}
+
+```
 #### 200 ( Success )
 - Header:
 	- `Content-Type: application/json`
